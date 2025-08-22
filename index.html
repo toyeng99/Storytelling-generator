@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Storytelling Generator — Prototipe</title>
+  <style>
+    :root {
+      --bg: #0f1216; --card:#171b22; --muted:#8ea0b5; --text:#e8eef6; --acc:#5eb1ff; --acc2:#ffd166;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 800px at 50% -10%, #162033 0%, #0f1216 60%);
+      color: var(--text);
+    }
+    header { padding: 16px 18px; position: sticky; top: 0; background: rgba(15,18,22,0.8); backdrop-filter: blur(6px); border-bottom: 1px solid #1f2631; }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.4px; }
+    .container { max-width: 860px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: linear-gradient(180deg, rgba(23,27,34,0.9), rgba(23,27,34,0.8));
+      border: 1px solid #222a36; border-radius: 14px; padding: 14px; margin-bottom: 14px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 640px) { .row-2 { grid-template-columns: 1fr 1fr; } .row-3 { grid-template-columns: 1fr 1fr 1fr; } }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #283244;
+      background: #0f131a; color: var(--text); outline: none;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .btn {
+      display: inline-flex; gap: 8px; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, #2685ff, #0f65d9); color: white; border: none;
+      padding: 11px 14px; border-radius: 10px; font-weight: 600; cursor: pointer;
+      box-shadow: 0 8px 16px rgba(55,125,255,0.28);
+    }
+    .btn.secondary { background: linear-gradient(180deg, #2a3242, #1b2331); color: #dbe8ff; box-shadow: none; border: 1px solid #2a3446; }
+    .btn.warn { background: linear-gradient(180deg, #ff9b2f, #e66b00); box-shadow: 0 8px 16px rgba(255,155,47,0.25); }
+    .pill { display: inline-flex; padding: 6px 10px; border-radius: 100px; border: 1px solid #2a3446; color: #cfe1ff; margin: 4px 4px 0 0; cursor: pointer; }
+    .pill:hover { border-color: #395073; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .output { white-space: pre-wrap; background: #0c0f14; border: 1px solid #222a36; padding: 12px; border-radius: 12px; line-height: 1.55; }
+    .title { font-size: 18px; font-weight: 700; margin: 6px 0 4px; }
+    .syn { color: #cfd8e6; margin: 0 0 12px; }
+    .chapter { margin: 12px 0; padding: 10px; border: 1px solid #283244; border-radius: 10px; background: #0f131a; }
+    .chip { display:inline-block; font-size:11px; color:#9ec5ff; background:#122138; padding:4px 8px; border-radius:999px; margin-right:6px; }
+    .toolbar { display:flex; gap:8px; flex-wrap: wrap; }
+    .tabs { display:flex; gap:6px; margin: 10px 0 6px; }
+    .tab { padding:8px 12px; border-radius:10px; border:1px solid #283244; cursor:pointer; }
+    .tab.active { background:#122138; border-color:#35507a; color:#cfe1ff; }
+    .hidden { display:none; }
+    .spinner { width:18px; height:18px; border:2px solid #9ec5ff44; border-top-color:#9ec5ff; border-radius:50%; animation:spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .note { border-left: 3px solid #2e6bcf; padding: 8px 10px; background: #101826; border-radius: 6px; color:#cfe1ff; }
+    .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .sep { height:1px; background:#222a36; margin:10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Storytelling Generator — Prototipe Web</h1>
+  </header>
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" data-tab="story">Generator Cerita</div>
+      <div class="tab" data-tab="scene">Scene Brief (Gambar)</div>
+    </div>
+
+    <!-- STORY GENERATOR -->
+    <section id="story" class="card">
+      <div class="row row-3">
+        <div>
+          <label>Genre</label>
+          <input id="genre" placeholder="Fantasi, Misteri, Sci‑Fi, Realisme magis" />
+        </div>
+        <div>
+          <label>Tema</label>
+          <input id="theme" placeholder="Harapan, Persahabatan, Penebusan" />
+        </div>
+        <div>
+          <label>Nada</label>
+          <select id="tone">
+            <option>hangat-puitis</option>
+            <option>tegang-sinematik</option>
+            <option>humoris ringan</option>
+            <option>melankolis reflektif</option>
+          </select>
+        </div>
+      </div>
+      <div class="row row-3">
+        <div>
+          <label>Audiens</label>
+          <select id="audience">
+            <option>umum</option>
+            <option>12+</option>
+            <option>17+</option>
+          </select>
+        </div>
+        <div>
+          <label>Panjang (perkiraan kata)</label>
+          <select id="length">
+            <option value="600">600</option>
+            <option value="800" selected>800</option>
+            <option value="1000">1000</option>
+          </select>
+        </div>
+        <div>
+          <label>Struktur</label>
+          <select id="structure">
+            <option value="3-act" selected>Tiga Babak</option>
+            <option value="hero">Perjalanan Pahlawan</option>
+            <option value="slice">Slice of Life</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:6px;">
+        <span class="muted">Preset cepat:</span><br/>
+        <span class="pill" data-preset="fantasi">Fantasi Nusantara</span>
+        <span class="pill" data-preset="misteri">Misteri Urban</span>
+        <span class="pill" data-preset="romansa">Romansa Waktu</span>
+        <span class="pill" data-preset="scifi">Sci‑Fi Optimistis</span>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="row row-2">
+        <div>
+          <label>Backend (opsional)</label>
+          <input id="backendUrl" placeholder="https://your-backend.example.com/generate" />
+          <div class="muted">Jika dikosongkan, generator lokal akan digunakan.</div>
+        </div>
+        <div>
+          <label>API Key (opsional)</label>
+          <input id="apiKey" placeholder="Hanya jika backend memerlukannya" />
+          <div class="muted">Dikirim sebagai header "api-key".</div>
+        </div>
+      </div>
+
+      <div class="flex" style="margin-top:10px;">
+        <button id="genBtn" class="btn"><span class="spinner hidden" id="spin1"></span>Buat Cerita</button>
+        <button id="copyStory" class="btn secondary">Salin</button>
+        <button id="saveStory" class="btn secondary">Unduh .txt</button>
+        <button id="shareStory" class="btn secondary">Bagikan</button>
+      </div>
+
+      <div id="storyOut" class="output" style="margin-top:12px;">Hasil cerita akan tampil di sini.</div>
+    </section>
+
+    <!-- SCENE BRIEF -->
+    <section id="scene" class="card hidden">
+      <div class="row row-2">
+        <div>
+          <label>Pilih adegan</label>
+          <select id="scenePick">
+            <option value="fajar">Fajar Pertama</option>
+            <option value="hutan">Hutan Bisikan</option>
+            <option value="danau">Danau Cermin Waktu</option>
+            <option value="gerbang">Gerbang Badai</option>
+            <option value="kuil">Kuil Seribu Lilin</option>
+            <option value="desa">Kembali ke Rumah</option>
+          </select>
+        </div>
+        <div>
+          <label>Aspect ratio</label>
+          <div class="flex">
+            <label><input type="checkbox" id="ar169" checked /> 16:9 (3840×2160)</label>
+            <label><input type="checkbox" id="ar916" checked /> 9:16 (2160×3840)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex" style="margin-top:10px;">
+        <button id="briefBtn" class="btn"><span class="spinner hidden" id="spin2"></span>Buat Brief</button>
+        <button id="copyBrief" class="btn secondary">Salin</button>
+        <button id="saveBrief" class="btn secondary">Unduh .txt</button>
+        <button id="shareBrief" class="btn secondary">Bagikan</button>
+      </div>
+
+      <div class="note" style="margin-top:10px;">
+        Brief berisi style visual, komposisi kamera, dan spesifikasi teknis (termasuk 16:9 & 9:16) siap dipakai untuk produksi gambar.
+      </div>
+
+      <div id="briefOut" class="output" style="margin-top:12px;">Brief adegan akan tampil di sini.</div>
+    </section>
+  </div>
+
+  <script>
+    // Tab switch
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const tab = t.dataset.tab;
+        document.getElementById('story').classList.toggle('hidden', tab!=='story');
+        document.getElementById('scene').classList.toggle('hidden', tab!=='scene');
+      });
+    });
+
+    // Presets
+    const genre = document.getElementById('genre');
+    const theme = document.getElementById('theme');
+    const tone = document.getElementById('tone');
+    document.querySelectorAll('.pill').forEach(p => {
+      p.addEventListener('click', () => {
+        const k = p.dataset.preset;
+        if (k === 'fantasi') { genre.value = 'Fantasi Nusantara'; theme.value = 'Keberanian & Warisan'; tone.value = 'hangat-puitis'; }
+        if (k === 'misteri') { genre.value = 'Misteri Urban'; theme.value = 'Kebenaran & Bayangan'; tone.value = 'tegang-sinematik'; }
+        if (k === 'romansa') { genre.value = 'Romansa Waktu'; theme.value = 'Penyesalan & Kesempatan Kedua'; tone.value = 'melankolis reflektif'; }
+        if (k === 'scifi') { genre.value = 'Fiksi Ilmiah Optimistis'; theme.value = 'Kolaborasi & Penemuan'; tone.value = 'hangat-puitis'; }
+      });
+    });
+
+    // Utilities
+    const el = id => document.getElementById(id);
+    function copyText(t){ navigator.clipboard?.writeText(t); }
+    function downloadText(filename, text){
+      const blob = new Blob([text], {type: "text/plain"}); const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+    }
+    async function shareText(title, text){
+      try { if (navigator.share) await navigator.share({ title, text }); else throw 0; }
+      catch { copyText(text); alert('Teks disalin ke clipboard.'); }
+    }
+
+    // Local story generator (offline)
+    function generateLocalStory(params){
+      const { genre, theme, tone, audience, length, structure } = params;
+      const wc = parseInt(length||800,10);
+      const cLen = [Math.round(wc*0.34), Math.round(wc*0.33), Math.round(wc*0.33)];
+      const heroNames = ['Aru','Nara','Sena','Raka','Mira','Galang','Tara','Dipa','Kenara','Rin'];
+      const places = ['Surabaya senja','Lembah Kabut','Pasar Malam Tua','Stasiun Kota Lama','Pulau Angin Timur','Gunung Remang'];
+      const mc = heroNames[Math.floor(Math.random()*heroNames.length)];
+      const place = places[Math.floor(Math.random()*places.length)];
+      const styleChip = `#${genre.replace(/\s+/g,'')}  #${tone.replace(/\s+/g,'')}`;
+
+      const title = `${genre}: ${mc} di ${place}`;
+      const synopsis = `Dalam ${genre.toLowerCase()} bertema ${theme.toLowerCase()}, ${mc} mengejar tujuan yang tampak mustahil di ${place}. Saat bayang-bayang masa lalu bertemu fajar harapan, satu keputusan mengubah segalanya.`;
+      const voice = tone.includes('puitis') ? 'Bahasanya hangat dan puitis, detail sensorik kaya.' :
+                    tone.includes('tegang') ? 'Ritme cepat, kalimat tajam, ketegangan bertahap.' :
+                    tone.includes('humoris') ? 'Nada ringan, metafora jenaka, ritme lincah.' :
+                    'Nada reflektif dengan tempo tenang.';
+
+      const chap1 = `BAB 1 — Panggilan\n${voice}\n${mc} hidup di ${place}, di mana kabar samar tentang ${theme.toLowerCase()} bergaung di antara orang-orang. Sebuah peristiwa kecil—seperti retakan di kaca—membuka jalan menuju konflik yang lebih besar. ${mc} menetapkan tujuan, namun hambatan pertama segera muncul.`;
+      const chap2 = `BAB 2 — Ujian\nRintangan makin berat. Aliansi rapuh terbentuk, kebenaran parsial terungkap. Ketika ${mc} harus memilih antara keselamatan pribadi atau melangkah dalam gelap, pilihan itu menuntut keberanian yang belum pernah ia miliki. Jejak menuju jawaban mengarah ke inti ${theme.toLowerCase()}.`;
+      const chap3 = `BAB 3 — Pengungkapan\nDi titik balik, fakta tersembunyi membalik makna semua yang terjadi. Twist: yang dicari ${mc} bukanlah objek di luar, melainkan sesuatu yang telah dia bawa sejak awal—dan dunia di ${place} memantulkan perubahan itu. Penutup memberi harapan tanpa menutup kemungkinan bab berikutnya.`;
+
+      const trimToWords = (text, target) => {
+        const words = text.split(/\s+/); if (words.length <= target) return text;
+        return words.slice(0, target-10).join(' ') + '...';
+      };
+
+      const chapters = [
+        { title: "Bab 1", content: trimToWords(chap1, cLen[0]) },
+        { title: "Bab 2", content: trimToWords(chap2, cLen[1]) },
+        { title: "Bab 3", content: trimToWords(chap3, cLen[2]) }
+      ];
+
+      return { title, synopsis, chapters, meta: { genre, theme, tone, audience, structure, chips: styleChip } };
+    }
+
+    // Render Story
+    function renderStory(s){
+      const box = el('storyOut');
+      let out = '';
+      out += `📘 ${s.title}\n`;
+      if (s.meta?.chips) out += `${s.meta.chips}\n`;
+      out += `\nSinopsis:\n${s.synopsis}\n`;
+      s.chapters?.forEach((c, i) => {
+        out += `\n— ${c.title} —\n${c.content}\n`;
+      });
+      box.textContent = out.trim();
+      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return out.trim();
+    }
+
+    // Backend call
+    async function callBackend(params, url, key){
+      const body = {
+        genre: params.genre, theme: params.theme,
+        tone: params.tone, audience: params.audience,
+        length: params.length, structure: params.structure
+      };
+      const headers = { 'Content-Type': 'application/json' };
+      if (key) headers['api-key'] = key;
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+      if (!res.ok) throw new Error('Gagal memanggil backend');
+      return await res.json();
+    }
+
+    // Buttons: Story
+    el('genBtn').addEventListener('click', async () => {
+      const params = {
+        genre: el('genre').value || 'Fantasi',
+        theme: el('theme').value || 'Harapan',
+        tone: el('tone').value,
+        audience: el('audience').value,
+        length: el('length').value,
+        structure: el('structure').value
+      };
+      const backendUrl = el('backendUrl').value.trim();
+      const apiKey = el('apiKey').value.trim();
+      el('spin1').classList.remove('hidden');
+      el('storyOut').textContent = 'Membuat cerita...';
+      try {
+        let story;
+        if (backendUrl) {
+          const data = await callBackend(params, backendUrl, apiKey);
+          // Normalisasi minimal
+          story = {
+            title: data.title || 'Tanpa Judul',
+            synopsis: data.synopsis || '',
+            chapters: data.chapters || [],
+            meta: { genre: params.genre, theme: params.theme, tone: params.tone, audience: params.audience, structure: params.structure, chips: `#${params.genre.replace(/\s+/g,'')}  #${params.tone.replace(/\s+/g,'')}` }
+          };
+        } else {
+          story = generateLocalStory(params);
+        }
+        renderStory(story);
+        window.__lastStoryText = el('storyOut').textContent;
+      } catch (e) {
+        el('storyOut').textContent = 'Terjadi kesalahan saat membuat cerita.';
+      } finally {
+        el('spin1').classList.add('hidden');
+      }
+    });
+
+    el('copyStory').addEventListener('click', () => {
+      const t = el('storyOut').textContent; if (!t) return;
+      copyText(t); alert('Cerita disalin.');
+    });
+    el('saveStory').addEventListener('click', () => {
+      const t = el('storyOut').textContent || ''; downloadText('cerita.txt', t);
+    });
+    el('shareStory').addEventListener('click', () => {
+      const t = el('storyOut').textContent || ''; shareText('Cerita', t);
+    });
+
+    // Scene briefs data
+    function briefBase(){
+      return {
+        style: [
+          'Gaya visual: epic cinematic realism + fantasy concept art, detail tajam dan atmosferik.',
+          'Palet warna: kontras biru-lembut ↔ emas hangat; cahaya utama sebagai narator suasana.',
+          'Pencahayaan: backlight dramatis + rim light emas pada tepi objek utama.',
+          'Tekstur: kain, logam, kabut, vegetasi, dan partikel cahaya tertangani halus.',
+          'Nuansa: damai, sakral, misterius; memantik rasa penasaran.'
+        ],
+        camera: [
+          'Angle: perspektif yang menegaskan skala lanskap dan figur.',
+          'Depth of Field: subjek utama tajam, latar berkabut lembut.',
+          'Komposisi: aturan sepertiga; garis pandang diarahkan oleh cahaya.'
+        ],
+        tech: ratio => {
+          const lines = [];
+          if (ratio['16:9']) lines.push('16:9 — 3840×2160 (4K), framing lebar dan sinematik.');
+          if (ratio['9:16']) lines.push('9:16 — 2160×3840 (4K vertikal), fokus subjek di tengah, langit/latar memanjang.');
+          return [
+            'Format: PNG master (kualitas tinggi), JPG untuk unggahan cepat.',
+            'Render: ultra-high detail, anti-aliasing tinggi, global illumination.',
+            ...lines
+          ];
+        }
+      };
+    }
+
+    function briefFajar(ratio){
+      const base = briefBase();
+      const setting = [
+        'Waktu & cahaya: dini hari; gradasi langit biru kelam → oranye keemasan; kipas cahaya menyapu lembah berkabut.',
+        'Tokoh: Penjaga berjubah biru tua berbordir emas, low angle sedikit dari belakang; lentera perunggu memancar hangat.',
+        'Latar dekat: ilalang berembun, bunga liar memantulkan cahaya.',
+        'Latar tengah: lembah berkabut bergerak pelan seperti napas bumi.',
+        'Latar jauh: pegunungan berlapis; puncak tersentuh sinar emas.',
+        'Aksen dramatis: burung-burung kecil menembus cahaya fajar.'
+      ];
+      const camera = [...base.camera];
+      camera[0] = 'Angle: low angle sedikit dari belakang subjek di bibir tebing.';
+      camera[2] = 'Komposisi: subjek kiri, matahari kanan; garis cahaya mengarahkan mata.';
+      const tech = base.tech(ratio);
+      tech.push('Catatan framing 9:16: ruang langit diperluas, garis cahaya vertikal dari lentera ke matahari.');
+      return { title: 'Fajar Pertama', setting, style: base.style, camera, tech, extras: [
+        'Partikel cahaya tipis (light dust) di udara pagi.',
+        'Jejak embun berkilau pada rumput.',
+        'Berkas cahaya lentera membelah kabut menuju ufuk.'
+      ] };
+    }
+
+    function briefHutan(ratio){
+      const base = briefBase();
+      const setting = [
+        'Waktu & cahaya: menjelang siang; god rays menembus kanopi, jatuh seperti pilar cahaya.',
+        'Tokoh: Penjaga menoleh ke kiri, mendengar bisikan; lentera redup menyatu dengan cahaya alami.',
+        'Pohon raksasa: kulit retak alami, akar menjalar; lumut tebal di permukaan.',
+        'Lantai hutan: karpet lumut, bunga putih/ungu pucat, jamur bercahaya samar.',
+        'Atmosfer: partikel debu & serbuk bunga melayang; kupu-kupu/burung kecil sesekali.'
+      ];
+      const camera = [...base.camera];
+      camera[0] = 'Angle: eye level, kamera sedikit maju untuk rasa intim.';
+      camera[2] = 'Komposisi: subjek kiri, pohon besar & pilar cahaya kanan.';
+      const tech = base.tech(ratio);
+      tech.push('Catatan framing 9:16: batang pohon besar jadi jangkar vertikal, kanopi mendominasi bagian atas.');
+      return { title: 'Hutan Bisikan', setting, style: base.style, camera, tech, extras: [
+        'Serangga kecil mengilap di pilar cahaya.',
+        'Embun menggantung di ujung daun yang tertimpa cahaya.'
+      ] };
+    }
+
+    function briefDanau(ratio){
+      const base = briefBase();
+      const setting = [
+        'Waktu & cahaya: senja biru-ungu; aurora tipis membentang di langit.',
+        'Permukaan danau: memantulkan langit bagaikan cermin sempurna; riak halus membelah refleksi.',
+        'Tokoh: Penjaga melihat bayangannya yang lebih tua di permukaan air.',
+        'Tepian danau: batu licin, rerumputan dengan tetes air, kabut setinggi mata kaki.'
+      ];
+      const camera = [...base.camera];
+      camera[0] = 'Angle: high-mid, sedikit ke atas untuk menangkap simetri langit-danau.';
+      camera[2] = 'Komposisi: simetri vertikal; garis horizon di tengah untuk efek cermin.';
+      const tech = base.tech(ratio);
+      tech.push('Catatan framing 9:16: separuh atas langit aurora, separuh bawah refleksi air.');
+      return { title: 'Danau Cermin Waktu', setting, style: base.style, camera, tech, extras: [
+        'Jejak cahaya aurora tergambar ulang di riak air.',
+        'Kabut berpendar lembut oleh cahaya lentera.'
+      ] };
+    }
+
+    function briefGerbang(ratio){
+      const base = briefBase();
+      const setting = [
+        'Waktu & cahaya: senja badai; awan gelap bergerak cepat, kilat sesekali.',
+        'Dua pilar batu raksasa di gurun; pasir berputar oleh angin.',
+        'Tokoh: Penjaga mengangkat lentera; cahaya hangat membelah badai mikro di sekitarnya.'
+      ];
+      const camera = [...base.camera];
+      camera[0] = 'Angle: low wide; menegaskan skala pilar dan langit badai.';
+      camera[2] = 'Komposisi: pilar sebagai gerbang, subjek di sumbu tengah bawah.';
+      const tech = base.tech(ratio);
+      tech.push('Catatan framing 9:16: pilar menjadi garis vertikal kuat, kilat di sisi-sisi frame.');
+      return { title: 'Gerbang Badai', setting, style: base.style, camera, tech, extras: [
+        'Butir pasir berkilau terkena kilat.',
+        'Vignette halus untuk menambah fokus ke cahaya lentera.'
+      ] };
+    }
+
+    function briefKuil(ratio){
+      const base = briefBase();
+      const setting = [
+        'Interor kuil megah: ratusan lilin menyala; bayangan menari di dinding batu.',
+        'Jalur cahaya hangat membentuk pola seperti bintang di lantai.',
+        'Tokoh: Penjaga meletakkan lentera; cahaya menyatu dengan samudra lilin.'
+      ];
+      const camera = [...base.camera];
+      camera[0] = 'Angle: eye level simetris; rasa sakral dan tenang.';
+      camera[2] = 'Komposisi: garis perspektif menuju altar; subjek pada titik vanishing.';
+      const tech = base.tech(ratio);
+      tech.push('Catatan framing 9:16: kolom & lilin tersusun menjadi ritme vertikal yang khidmat.');
+      return { title: 'Kuil Seribu Lilin', setting, style: base.style, camera, tech, extras: [
+        'Asap lilin tipis seperti tirai.',
+        'Partikel jelaga halus berpendar oleh cahaya.'
+      ] };
+    }
+
+    function briefDesa(ratio){
+      const base = briefBase();
+      const setting = [
+        'Desa lembah saat malam cerah; bintang baru muncul di langit.',
+        'Rumah-rumah memancarkan cahaya hangat; jalan setapak berkilau setelah hujan.',
+        'Tokoh: Penjaga kembali; cahaya dari lentera naik ke langit menjadi bintang.'
+      ];
+      const camera = [...base.camera];
+      camera[0] = 'Angle: medium-wide; menyeimbangkan figur dan lanskap desa.';
+      camera[2] = 'Komposisi: subjek di sepertiga kiri; bintang baru di kanan atas.';
+      const tech = base.tech(ratio);
+      tech.push('Catatan framing 9:16: langit diperluas untuk menonjolkan bintang baru.');
+      return { title: 'Kembali ke Rumah', setting, style: base.style, camera, tech, extras: [
+        'Refleksi lampu rumah pada bebatuan basah.',
+        'Kabut tipis di kaki bukit.'
+      ] };
+    }
+
+    function renderBrief(b){
+      const lines = [];
+      lines.push(`🎬 ${b.title}`);
+      lines.push('');
+      lines.push('Setting & Atmosfer:');
+      b.setting.forEach(x => lines.push('• ' + x));
+      lines.push('');
+      lines.push('Style & Mood:');
+      b.style.forEach(x => lines.push('• ' + x));
+      lines.push('');
+      lines.push('Kamera & Komposisi:');
+      b.camera.forEach(x => lines.push('• ' + x));
+      lines.push('');
+      lines.push('Teknis:');
+      b.tech.forEach(x => lines.push('• ' + x));
+      if (b.extras?.length) {
+        lines.push('');
+        lines.push('Tambahan Kreatif:');
+        b.extras.forEach(x => lines.push('• ' + x));
+      }
+      el('briefOut').textContent = lines.join('\n');
+      el('briefOut').scrollIntoView({ behavior:'smooth', block:'start' });
+      return lines.join('\n');
+    }
+
+    // Buttons: Brief
+    el('briefBtn').addEventListener('click', () => {
+      el('spin2').classList.remove('hidden');
+      setTimeout(() => {
+        const ratio = { '16:9': el('ar169').checked, '9:16': el('ar916').checked };
+        const val = el('scenePick').value;
+        let b;
+        if (val === 'fajar') b = briefFajar(ratio);
+        else if (val === 'hutan') b = briefHutan(ratio);
+        else if (val === 'danau') b = briefDanau(ratio);
+        else if (val === 'gerbang') b = briefGerbang(ratio);
+        else if (val === 'kuil') b = briefKuil(ratio);
+        else b = briefDesa(ratio);
+        window.__lastBriefText = renderBrief(b);
+        el('spin2').classList.add('hidden');
+      }, 250);
+    });
+    el('copyBrief').addEventListener('click', () => {
+      const t = el('briefOut').textContent; if (!t) return; copyText(t); alert('Brief disalin.');
+    });
+    el('saveBrief').addEventListener('click', () => {
+      const t = el('briefOut').textContent || ''; downloadText('scene-brief.txt', t);
+    });
+    el('shareBrief').addEventListener('click', () => {
+      const t = el('briefOut').textContent || ''; shareText('Scene Brief', t);
+    });
+
+    // Autofill small defaults for quick try
+    if (!genre.value) genre.value = 'Fantasi Nusantara';
+    if (!theme.value) theme.value = 'Harapan & Warisan';
+  </script>
+</body>
+</html>
